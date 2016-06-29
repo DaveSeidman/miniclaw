@@ -1,0 +1,28 @@
+{
+  "name": "claw-2d",
+  "version": "1.0.0",
+  "description": "tiny physics based claw game",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.13.4"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-livereload": "^3.8.1",
+    "livereload": "^0.4.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DaveSeidman/miniclaw.git"
+  },
+  "author": "dave seidman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DaveSeidman/miniclaw/issues"
+  },
+  "homepage": "https://github.com/DaveSeidman/miniclaw#readme"
+}
