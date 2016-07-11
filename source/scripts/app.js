@@ -19,16 +19,17 @@ function init() {
     mtr.height = window.innerHeight;
 
     var Engine = Matter.Engine,
-        Render = Matter.Render,
-        World = Matter.World,
-        Bodies = Matter.Bodies,
-        Common = Matter.Common,
-        Composite = Matter.Composite,
-        Composites = Matter.Composites,
-        Constraint = Matter.Constraint,
-        Vertices = Matter.Vertices,
-        Sleeping = Matter.Sleeping,
-        Svg = Matter.Svg;
+    Render = Matter.Render,
+    World = Matter.World,
+    Body = Matter.Body,
+    Bodies = Matter.Bodies,
+    Common = Matter.Common,
+    Composite = Matter.Composite,
+    Composites = Matter.Composites,
+    Constraint = Matter.Constraint,
+    Vertices = Matter.Vertices,
+    Sleeping = Matter.Sleeping,
+    Svg = Matter.Svg;
 
     var engine = Engine.create();
 
@@ -53,21 +54,21 @@ function init() {
     mtr.hookbodyverts = Vertices.fromPath('64,3 140,3 150,15 150,30 140,40 60,40 50,30 50,15');
     mtr.lfhook = Bodies.fromVertices(100, 180, mtr.lfhookverts,   { mass : 5, isStatic : false, restitution: .5, frictionAir:.1, collisionFilter: { group: -2  } } );
     mtr.rthook = Bodies.fromVertices(250, 180, mtr.rthookverts,   { mass : 3, isStatic : false, restitution: .5, frictionAir:.1, collisionFilter: { group: -2 } } );
-    mtr.clawRoot = Bodies.rectangle(175,110,60,20, { mass : 10, isStatic : true,  collisionFilter: { group: -2 } } );
+    mtr.clawRoot = Bodies.rectangle(175,110,100,20, { mass : 10, isStatic : true,  collisionFilter: { group: -2 } } );
 
     mtr.toy = Bodies.circle(175,180, 40, { mass: 2, isStatic: false });
 
     mtr.rthookConst = Constraint.create({
         bodyA : mtr.clawRoot,
-		bodyB : mtr.rthook,
+        bodyB : mtr.rthook,
         pointA : { x: 15, y: 0 },
-		pointB : { x: -60, y: -68 },
-		length : 0,
-		stiffness : 1,
-		render : {
-			visible: true
-		}
-	});
+        pointB : { x: -60, y: -68 },
+        length : 0,
+        stiffness : 1,
+        render : {
+            visible: true
+        }
+    });
 
     mtr.lfhookConst = Constraint.create({
         bodyA : mtr.clawRoot,
@@ -96,6 +97,27 @@ function init() {
 
     // add all of the bodies to the world
     World.add(engine.world, [mtr.toy, mtr.lfhook, mtr.rthook, mtr.lfhookConst, mtr.clawRoot, mtr.grabConst, mtr.rthookConst, mtr.leftWall, mtr.rightWall, mtr.ground]);
+
+
+    //group = Body.nextGroup(true);
+
+    var ropeB = Composites.stack(500, 100, 1, 10, 0, 10, function(x, y) {
+        return Bodies.circle(x, y, 10, { collisionFilter: { group: -3 }, isStatic: false });
+    });
+
+    Composites.chain(ropeB, 0, 0, 0, 0, { stiffness: 1, length: 40 });
+    Composite.add(ropeB, Constraint.create({
+        bodyB: ropeB.bodies[0],
+        pointB: { x: 0, y: 0 },
+        pointA: { x: 520, y: 120 },
+        stiffness: 1
+    }));
+
+    World.add(engine.world, ropeB);
+
+
+
+
 
     // run the engine
     Engine.run(engine);
@@ -143,6 +165,7 @@ function resize() {
     mtr.render.options.width = mtr.width;
     mtr.render.options.height = mtr.height;
     Matter.Body.setPosition(mtr.ground, { x: mtr.width/2, y: mtr.height + mtr.pad/2 });
+    Matter.Body.setPosition(mtr.leftWall, { x: mtr.leftWall.position.x, y: mtr.height/2 });
 
 }
 
@@ -158,11 +181,11 @@ var claw = {
 var dirs = {
     37 : {
         dir : 'left',
-        vel : -1
+        vel : -2
     },
     39 : {
         dir : 'right',
-        vel : 1
+        vel : 2
     }
 }
 function keyPressed(event) {
@@ -176,6 +199,8 @@ function keyReleased(event) {
     if(dirs[event.keyCode]) claw.velocity = 0;
 }
 
+
+loop();
 
 function loop() {
 
